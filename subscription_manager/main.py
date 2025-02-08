@@ -23,8 +23,8 @@ def db_bean():
 def hello_world():
     return 'Hello to my app'
 
-@app.route('/auth')
-def auth():
+@app.route('/auth/all')
+def auth_all():
     db = db_bean()
     collection = db["users"]
     users = collection.find({})
@@ -33,6 +33,18 @@ def auth():
         record['_id'] = str(record['_id'])  # Convert ObjectId to string for JSON serialization
         records.append(record)
     return jsonify(records)
+
+@app.route('/auth')
+def auth():
+    db = db_bean()
+    collection = db["users"]
+    api_key = request.args.get('api_key')
+    user = collection.find_one({"apiKey": api_key})
+    if (user):
+        user['_id'] = str(user['_id']) 
+        return jsonify(user)
+    else:
+        return jsonify({"error": "User not found"}), 404
 
 @app.route('/auth', methods=['POST'])
 def insert_user():
