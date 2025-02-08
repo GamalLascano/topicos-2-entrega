@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  subscription_manager:
+    build: 
+      context: ./subscription_manager
+      dockerfile: Dockerfile
+    container_name: subscription_manager
+    ports: 
+      - "5004:5004"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/subscriptions
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo_container
+    hostname: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=subscriptions
+    volumes:
+      - ./mongo-init/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
