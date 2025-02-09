@@ -13,6 +13,18 @@ services:
     depends_on:
       - mongo
 
+  logger_service:
+    build: 
+      context: ./logger_service
+      dockerfile: Dockerfile
+    container_name: logger_service
+    ports: 
+      - "5006:5006"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/subscriptions
+    depends_on:
+      - mongo
+
   mongo:
     image: mongo:latest
     container_name: mongo_container
