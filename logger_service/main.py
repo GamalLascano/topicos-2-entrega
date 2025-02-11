@@ -1,16 +1,19 @@
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
+from datetime import datetime
 import os
 
 app = Flask(__name__)
 
 class Log:
-    def __init__(self, apiKey:str, subscription:str, executionTime:float, operation: str, endpoint: str):
+    def __init__(self, apiKey:str, subscription:str, executionTime:str, operation: str, endpoint: str, status: int):
         self.apiKey = apiKey
         self.subscription = subscription
         self.executionTime = executionTime
         self.operation = operation
         self.endpoint = endpoint
+        self.status = status
+        self.date = datetime.now()
 
 def db_bean():
     mongo_url = os.getenv('MONGO_URL', 'mongodb://localhost:27017/subscriptions')
@@ -26,7 +29,7 @@ def hello_world():
 def log_request():
     db = db_bean()
     collection = db["logs"]
-    log = Log(request.json['apiKey'], request.json['subscription'], request.json['executionTime'], request.json['operation'], request.json['endpoint'])
+    log = Log(request.json['apiKey'], request.json['subscription'], request.json['executionTime'], request.json['operation'], request.json['endpoint'], request.json['status'])
     if (log):
         result = collection.insert_one(log.__dict__)
         result2 = collection.find_one({"_id": result.inserted_id})
