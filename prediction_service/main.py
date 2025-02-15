@@ -1,4 +1,5 @@
 from flask import Flask, request
+from prediction_service import PredictionService
 
 app = Flask(__name__)
 
@@ -9,6 +10,7 @@ def hello_world():
 class PredictionRequest:
     def __init__(self, inputs = []):
         self.inputs = inputs
+        self.service = PredictionService()
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -16,7 +18,9 @@ def predict():
         json = request.get_json()
         inputArray = json.get('inputs')
         if (inputArray):
-            return {'probability': 0.7, 'inputs': inputArray}
+            if (len(inputArray) == 2):
+                return self.service.predict(inputArray[0], inputArray[1])
+            return {'error': 'There was a problem with your request'}, 500
         return {'error': 'Request Object not valid'}, 400
     except:
         return {'error': 'Request Not Found'}, 400
