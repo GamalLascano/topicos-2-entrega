@@ -12,4 +12,5 @@ def Predict(request: PredictionRequest):
 
 def CreateResponse(rsp: requests.Response):
     probability = 100 - abs(100 - rsp.json()['probability'] * 100)
+    probability =  0 if probability < 0 else probability
     return {'probability': probability}
